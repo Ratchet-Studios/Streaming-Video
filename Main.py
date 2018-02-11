@@ -166,8 +166,6 @@ def main():
     # Strip unneeded videos
     #videos = strip_videos()
     
-    global caches
-    
     
     caches[0].videos.append(videos[0])
     
