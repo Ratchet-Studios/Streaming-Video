@@ -115,6 +115,7 @@ def get_score():
                         if request.video.id == video.id:
                             cache_id = cache.id
                             video_in_cache = True
+                            min_latency = connection_latencies[cache.id][endpoint.id]
                         
             if video_in_cache:
                 total_time_saved += request.quantity * (endpoint.datacentre_latency - connection_latencies[cache_id][endpoint.id])
@@ -142,7 +143,7 @@ def read_file(filename):
     for i in range(n_caches):
         connection_latencies.append([])
         for j in range(n_endpoints):
-            connection_latencies[i].append(0)
+            connection_latencies[i].append(-1)
 
     for i in range(n_endpoints):
         # read data for each endpoint
