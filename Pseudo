@@ -1,1 +1,7 @@
-Read input into
+Read input file
+Separate data into classes
+Strip list of videos down:
+    Remove videos that are unrequested
+    remove videos that are too large for any of the data centres
+Calculate time saved per request as a function of time the video is served and latency:
+    requests*(Data_centre_latency - cache_latency)
