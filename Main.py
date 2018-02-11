@@ -168,6 +168,7 @@ def main():
     
     global caches
     
+    
     caches[0].videos.append(videos[0])
     
     caches[1].videos.append(videos[3])
