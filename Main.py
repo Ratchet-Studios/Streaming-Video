@@ -5,16 +5,17 @@ requests = []
 cache_size = 0
 
 connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
-
 class Endpoint(object):
-    def __init__(self, datacentre_latency):
+    def __init__(self, id, datacentre_latency):
+        self.id = id
         self.datacentre_latency = datacentre_latency
         self.requests = []
         self.caches = []
 
 
 class Cache(object):
-    def __init__(self):
+    def __init__(self, id):
+        self.id = id
         self.videos = []
         self.endpoints = []
 
@@ -26,9 +27,9 @@ class Request(object):
 
 
 class Video(object):
-    def __init__(self, size):
+    def __init__(self, id, size):
+        self.id = id
         self.size = size
-
 
 def read_file(filename):
     f = open(filename)
@@ -70,13 +71,53 @@ def read_file(filename):
 def strip_videos():
     """ Remove videos that are unrequested
     remove videos that are too large for any of the data centres"""
-    
+
     for video in videos:
         if video.size > cache_size or video not in [request.video for request in requests]:
             videos.remove(video)
 
     return videos
 
+def write_to_file(caches):
+    """
+    Takes in the info about the caches and writes it to output.txt as google wants it formatted
+
+    :param caches: a list of all the caches that we are using.
+    :return: nothing, just writes to 'output.txt' the data as google wants it
+    """
+    text = str(len(caches))
+    for cache in caches:
+        text += "\n" + str(cache.id) + " "
+        for video in cache.videos:
+            text += str(video.id) + " "
+    output = open("output.txt","w")
+    output.write(text)
+    output.close()
+
+def create_dummy_caches():
+    """
+    Creates dummy caches & dummy videos for those caches within the limits specified by google
+    :return: a list of dummy caches, fully populated with videos and cache_id's
+    """
+    caches = []
+    for cache_id in range(random.randint(1, 1000)):
+        videos = []
+        for video_id in range(random.randint(1, 5)):
+            video = Video(random.randint(1, 1000))
+            videos.append(video)
+
+        cache = Cache(cache_id, videos)
+        caches.append(cache)
+    return caches
+
+def get_score():
+    """
+    Calculates our score from the variables, *NOT* from output.txt
+    :return: int: our score as described by google
+
+    for each request,
+
+    """
 
 def main():
     
@@ -85,6 +126,13 @@ def main():
 
     #Strip unneeded videos
     videos = strip_videos()
+
+    for endpoint in endpoints:
+        while endpoint.requests:
+            for request in endpoint.requests:
+
+            max(endpoint.requests.quantity)
+            endpoint.caches.min()
 
 
 if __name__ == '__main__':
