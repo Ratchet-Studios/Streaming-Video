@@ -4,15 +4,22 @@ n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part)
 video_sizes = [int(part) for part in f.readline().split()]
 
 for i in range(n_endpoints):
-	# read data for each endpoint
-	pass
+    # read data for each endpoint
+    pass
+
 
 class Endpoint(object):
-    def __init__(self, id, latency, caches):
+    def __init__(self, id, latency, caches, requests):
         self.id = id
         self.latency = latency
         self.caches = caches
+        self.requests = requests
+
 
 class Cache(object):
     def __init__(self, id, videos):
+        pass
+
+class Request(object):
+    def __init__(self, number_of, video):
         pass
