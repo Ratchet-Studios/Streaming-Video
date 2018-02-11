@@ -166,14 +166,17 @@ def main():
     #                 min_cacheid = connection_latencies[cache.id][endptindx]
 
     for e in endpoints:
-        max_request = Request(0, Video(1))
+        max_request = e.requests[0]
         for r in e.requests:
             if r.quantity > max_request.quantity:
                 max_request = r
 
-        cache_latency = 99999999
+        min_cache_latency = e.caches[0]
         for c in e.caches:
-            cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+            if connection_latencies[c.id][e.id] < connection_latencies[min_cache_latency.id][e.id]:
+                min_cache_latency = c
+
+
             #
             # for r in e.requests:
             #     cache_latency = 999999999
@@ -181,7 +184,7 @@ def main():
             #         if e in c.endpoints and r.video in c.videos:
             #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
 
-        total_time_saved += r.quantity * (e.datacentre_latency - cache_latency) * 1000
+        total_time_saved += r.quantity * (e.datacentre_latency - min_cache_latency) * 1000
         total_requests += r.quantity
 
 
