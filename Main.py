@@ -105,14 +105,19 @@ def get_score():
     for endpoint in endpoints:
         for request in endpoint.requests:
             # see if this request is in a cache connected to this endpoint
+            # only use cache with lowest latency
+            cache_id = -1
+            min_latency = endpoint.datacentre_latency
             video_in_cache = False
             for cache in endpoint.caches:
-                for video in cache.videos:
-                    if request.video.id == video.id:
-                        video_in_cache = True
+                if connection_latencies[cache.id][endpoint.id] < min_latency:
+                    for video in cache.videos:
+                        if request.video.id == video.id:
+                            cache_id = cache.id
+                            video_in_cache = True
                         
             if video_in_cache:
-                total_time_saved += request.quantity * (endpoint.datacentre_latency - connection_latencies[cache.id][endpoint.id])
+                total_time_saved += request.quantity * (endpoint.datacentre_latency - connection_latencies[cache_id][endpoint.id])
     
     total_requests = 0
     for request in requests:
