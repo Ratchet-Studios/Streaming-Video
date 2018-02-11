@@ -175,7 +175,10 @@ def main():
                 
                 timesaved_video_cache.append((timesaved, video, cache))
 
-    timesaved_video_cache.sort(key=lambda x: x[0]) # sort by time saved
+    timesaved_video_cache.sort(key=lambda x: x[0], reverse=True) # sort by time saved
+    
+    for time, video, cache in timesaved_video_cache:
+        print('time saved: {}, when video {} is added to cache {}'.format(time, video, cache))
 
     while timesaved_video_cache:  # while not empty
         # add video to cache (which saves most time)
