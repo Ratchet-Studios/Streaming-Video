@@ -51,7 +51,7 @@ def strip_videos():
     cnt = 0
     for video in videos:
         if video.size > cache_size or video.id not in requested_IDs:
-            videos[cnt].remove()
+            del videos[cnt]
         cnt += 1
     return videos
 
@@ -121,10 +121,10 @@ def read_file(filename):
     video_sizes = [int(part) for part in f.readline().split()]
 
     for i in range(n_videos):
-        videos.append(Video(video_sizes[i]))
+        videos.append(Video(i, video_sizes[i]))
 
     for i in range(n_caches):
-        caches.append(Cache())
+        caches.append(Cache(i))
 
     for i in range(n_caches):
         connection_latencies.append([])
@@ -135,7 +135,7 @@ def read_file(filename):
         # read data for each endpoint
         datacentre_latency, endpoint_n_caches = [int(part) for part in f.readline().split()]
 
-        endpoints.append(Endpoint(datacentre_latency))
+        endpoints.append(Endpoint(i, datacentre_latency))
 
         for j in range(endpoint_n_caches):
             cache, latency = [int(part) for part in f.readline().split()]
@@ -147,7 +147,7 @@ def read_file(filename):
         # read data for each video
         video_id, endpoint_id, n_requests = [int(part) for part in f.readline().split()]
 
-        requests.append(Request(n_requests, videos[video_id]))
+        requests.append(Request(i, n_requests, videos[video_id]))
         endpoints[endpoint_id].requests.append(requests[i])
 
     f.close()
@@ -171,16 +171,16 @@ def main():
     #             if min_cacheid < connection_latencies[cache.id][endptindx]:
     #                 min_cacheid = connection_latencies[cache.id][endptindx]
 
-    for e in endpoints:
-        max_request = e.requests[0]
-        for r in e.requests:
-            if r.quantity > max_request.quantity:
-                max_request = r
-
-        min_cache_latency = e.caches[0]
-        for c in e.caches:
-            if connection_latencies[c.id][e.id] < connection_latencies[min_cache_latency.id][e.id]:
-                min_cache_latency = c
+    # for e in endpoints:
+    #     max_request = e.requests[0]
+    #     for r in e.requests:
+    #         if r.quantity > max_request.quantity:
+    #             max_request = r
+    #
+    #     min_cache_latency = e.caches[0]
+    #     for c in e.caches:
+    #         if connection_latencies[c.id][e.id] < connection_latencies[min_cache_latency.id][e.id]:
+    #             min_cache_latency = c
 
 
             #
@@ -190,8 +190,8 @@ def main():
             #         if e in c.endpoints and r.video in c.videos:
             #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
 
-        total_time_saved += r.quantity * (e.datacentre_latency - min_cache_latency) * 1000
-        total_requests += r.quantity
+        # total_time_saved += r.quantity * (e.datacentre_latency - min_cache_latency) * 1000
+        # total_requests += r.quantity
 
 
 if __name__ == '__main__':
