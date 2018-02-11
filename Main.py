@@ -6,7 +6,6 @@ cache_size = 0
 
 connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
-
 class Endpoint(object):
     def __init__(self, id, datacentre_latency):
         self.id = id
@@ -102,16 +101,25 @@ def get_score():
 
     """
     total_time_saved = 0
+    
+    for endpoint in endpoints:
+        for request in endpoint.requests:
+            # see if this request is in the cache
+            video_in_cache = False
+            for cache in endpoint.caches:
+                for video in cache.videos:
+                    if request.video.id == video.id:
+                        video_in_cache = True
+                        
+            if video_in_cache:
+                total_time_saved += request.quantity * (endpoint.datacentre_latency - connection_latencies[cache.id][endpoint.id])
+    
     total_requests = 0
-    for e in endpoints:
-        for r in requests:
-            cache_latency = 999999999
-            for c in caches:
-                if e in c.endpoints and r.video in c.videos:
-                    cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
-            total_time_saved += r.quantity * (e.datacentre_latency - cache_latency) * 1000
-            total_requests += r.quantity
-    return total_time_saved // total_requests
+    for request in requests:
+        total_requests += request.quantity
+    
+    return (total_time_saved * 1000) / total_requests
+    
 
 
 def read_file(filename):
@@ -152,12 +160,24 @@ def read_file(filename):
 
     f.close()
 
-
 def main():
     read_file('example.in')
 
     # Strip unneeded videos
-    videos = strip_videos()
+    #videos = strip_videos()
+    
+    global caches
+    
+    caches[0].videos.append(videos[0])
+    
+    caches[1].videos.append(videos[3])
+    caches[1].videos.append(videos[1])
+    
+    caches[2].videos.append(videos[0])
+    caches[2].videos.append(videos[1])
+    
+    print(get_score())
+    
 
     # for endptindx, endpoint in enumerate(endpoints):
     #     while endpoint.requests:
