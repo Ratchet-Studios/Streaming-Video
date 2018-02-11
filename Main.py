@@ -29,8 +29,16 @@ class Video(object):
         self.size = size
 
 
+def strip_videos(videos, cache_size):
+    """ Remove videos that are unrequested
+    remove videos that are too large for any of the data centres"""
+    returned_videos = videos.copy()
 
-
+    cnt = 0
+    for video in videos:
+        if video.size > cache_size:
+            returned_videos[cnt].remove()
+        cnt += 1
 
 def write_to_file(caches):
     """
@@ -66,12 +74,17 @@ def create_dummy_caches():
 
 
 def main():
-	connection_latencies = [[]] # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
-
+    connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
     # read data from file
     f = open('me_at_the_zoo.in')
     n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part) for part in f.readline().split()]
     video_sizes = [int(part) for part in f.readline().split()]
+
+
+    videos = []
+    endpoints = []
+    caches = []
+    requests = []
 
     f.close()
 
