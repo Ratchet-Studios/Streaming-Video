@@ -221,7 +221,8 @@ def main():
         print('Cache ' + str(index) + ' contains:')
         for video in cache.videos:
             print('Video ' + str(video.id))
-
+    
+    print('Score: ' + str(get_score()))
 
 if __name__ == '__main__':
     main()
