@@ -1,14 +1,10 @@
-import random
-
 endpoints = []
 caches = []
 videos = []
 requests = []
-connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
-for i in range(n_endpoints):
-    # read data for each endpoint
-    pass
+cache_size = 0
 
+connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
 class Endpoint(object):
     def __init__(self, id, datacentre_latency):
@@ -98,9 +94,8 @@ def get_score():
                     pass
 
 
-def main():
-    # read data from file
-    f = open('me_at_the_zoo.in')
+def read_file(filename):
+    f = open(filename)
     n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part) for part in f.readline().split()]
     video_sizes = [int(part) for part in f.readline().split()]
 
@@ -127,7 +122,7 @@ def main():
             caches[cache].endpoints.append(endpoints[i])
             connection_latencies[cache][i] = latency
 
-    for i in range(n_videos):
+    for i in range(n_request_descriptions):
         # read data for each video
         video_id, endpoint_id, n_requests = [int(part) for part in f.readline().split()]
 
@@ -136,7 +131,21 @@ def main():
 
     f.close()
 
-    # Strip unneeded videos
+def strip_videos():
+    """ Remove videos that are unrequested
+    remove videos that are too large for any of the data centres"""
+
+    for video in videos:
+        if video.size > cache_size or video not in [request.video for request in requests]:
+            videos.remove(video)
+
+    return videos
+
+
+def main():
+    read_file('example.in')
+
+    #Strip unneeded videos
     videos = strip_videos()
 
 
