@@ -1,4 +1,10 @@
 import random
+
+endpoints = []
+caches = []
+videos = []
+requests = []
+connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 for i in range(n_endpoints):
     # read data for each endpoint
     pass
@@ -36,7 +42,7 @@ def strip_videos(videos, cache_size, requests):
     remove videos that are too large for any of the data centres"""
     requested_IDs = []
     for i in requests:
-         requested_IDs.append(i.video.id)
+        requested_IDs.append(i.video.id)
 
     cnt = 0
     for video in videos:
@@ -44,6 +50,7 @@ def strip_videos(videos, cache_size, requests):
             videos[cnt].remove()
         cnt += 1
     return videos
+
 
 def write_to_file(caches):
     """
@@ -57,9 +64,10 @@ def write_to_file(caches):
         text += "\n" + str(cache.id) + " "
         for video in cache.videos:
             text += str(video.id) + " "
-    output = open("output.txt","w")
+    output = open("output.txt", "w")
     output.write(text)
     output.close()
+
 
 def create_dummy_caches():
     """
@@ -77,23 +85,20 @@ def create_dummy_caches():
         caches.append(cache)
     return caches
 
+
 def get_score():
     """
     Calculates our score from the variables, *NOT* from output.txt
     :return: int: our score as described by google
-
-    for each request,
-
     """
+    for e in endpoints:
+        for r in requests:
+            for c in caches:
+                if e in c.endpoints and r.video in c.videos:
+                    pass
+
 
 def main():
-    endpoints = []
-    caches = []
-    videos = []
-    requests = []
-
-    connection_latencies = [[]] # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
-
     # read data from file
     f = open('me_at_the_zoo.in')
     n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part) for part in f.readline().split()]
@@ -131,7 +136,7 @@ def main():
 
     f.close()
 
-    #Strip unneeded videos
+    # Strip unneeded videos
     videos = strip_videos()
 
 
