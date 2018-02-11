@@ -1,8 +1,10 @@
+
 endpoints = []
 caches = []
 videos = []
 requests = []
 cache_size = 0
+
 
 connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
@@ -171,27 +173,43 @@ def main():
     #             if min_cacheid < connection_latencies[cache.id][endptindx]:
     #                 min_cacheid = connection_latencies[cache.id][endptindx]
 
-    # for e in endpoints:
-    #     max_request = e.requests[0]
-    #     for r in e.requests:
-    #         if r.quantity > max_request.quantity:
-    #             max_request = r
-    #
-    #     min_cache_latency = e.caches[0]
-    #     for c in e.caches:
-    #         if connection_latencies[c.id][e.id] < connection_latencies[min_cache_latency.id][e.id]:
-    #             min_cache_latency = c
+    for e in endpoints:
+        while e.requests:
+            # find largest quantity request
+            max_request = e.requests[0]
+            for r in e.requests:
+                if r.quantity > max_request.quantity:
+                    max_request = r
+
+            # find minimum cache latency
+            # min_cache_latency = e.caches[0]
+            # for c in e.caches:
+            #     if connection_latencies[c.id][e.id] < connection_latencies[min_cache_latency.id][e.id]:
+            #         min_cache_latency = c
+            e.caches.sort(key=lambda cache: connection_latencies[cache.id][e.id])
+
+            # if the cache has space for the video, add it
+            for cache_id, cache in enumerate(e.caches):
+                if cache.space_remaining > max_request.video.size:
+                    min_cache_latency.videos.append(max_request.video)
+                    e.requests.pop(max_request.video)  # removes max_request.video from e.requests
+                    break
 
 
-            #
-            # for r in e.requests:
-            #     cache_latency = 999999999
-            #     for c in caches:
-            #         if e in c.endpoints and r.video in c.videos:
-            #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+            max_storage_cache = e.caches[0]
+            for c in e.caches:
+                if c.space_remaining > max_storage_cache.space_remaining:
+                    max_storage_cache = c
 
-        # total_time_saved += r.quantity * (e.datacentre_latency - min_cache_latency) * 1000
-        # total_requests += r.quantity
+            smallest_video = e.requests[0]
+            for r in e.requests:
+                if r.video.size < smallest_video:
+                    smallest_video = r.video
+            if smallest_video > max_storage_cache:
+                break
+
+    write_to_file(list(chain.from_iterable([e.caches for e in endpoints])))
+
 
 
 if __name__ == '__main__':
