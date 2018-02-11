@@ -167,7 +167,7 @@ def main():
     #videos = strip_videos()
     
     
-    caches[0].videos.append(videos[0])
+    caches[0].videos.append(videos[2])
     
     caches[1].videos.append(videos[3])
     caches[1].videos.append(videos[1])
