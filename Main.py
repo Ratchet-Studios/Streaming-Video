@@ -215,8 +215,7 @@ def main():
                 if min_cacheid < connection_latencies[cache.id][endptindx]:
                     min_cacheid = connection_latencies[cache.id][endptindx]
 
-            max(endpoint.requests.quantity)
-            endpoint.caches.min()
+
 
 
 if __name__ == '__main__':
