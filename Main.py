@@ -21,5 +21,9 @@ class Cache(object):
         pass
 
 class Request(object):
-    def __init__(self, number_of, video):
+    def __init__(self, quantity, video):
+        pass
+
+class Video(object):
+    def __init__(self, id, size):
         pass
