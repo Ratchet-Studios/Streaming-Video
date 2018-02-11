@@ -6,6 +6,7 @@ cache_size = 0
 
 connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
+
 class Endpoint(object):
     def __init__(self, datacentre_latency):
         self.datacentre_latency = datacentre_latency
@@ -71,10 +72,10 @@ def create_dummy_caches():
     for cache_id in range(random.randint(1, 1000)):
         videos = []
         for video_id in range(random.randint(1, 5)):
-            video = Video(random.randint(1, 1000))
+            video = Video(video_id, random.randint(1, 1000))
             videos.append(video)
 
-        cache = Cache(cache_id, videos)
+        cache = Cache(cache_id)
         caches.append(cache)
     return caches
 
@@ -82,14 +83,25 @@ def create_dummy_caches():
 def get_score():
     """
     Calculates our score from the variables, *NOT* from output.txt
-    :return: int: our score as described by google
+    :return: int: average time (microseconds) saved as described by google (total_time_saved//total_requests)
+    Loop through every request coming from every endpoint.
+        Check every cache to see if it can satisfy that request.
+        Of those caches which can satisfy the request, choose the one with the least latency
+        Calculate the time saved, convert to microseconds and add it to total_time_saved
+    Calculate the average time saved
+
     """
+    total_time_saved = 0
+    total_requests = 0
     for e in endpoints:
         for r in requests:
+            cache_latency = 999999999
             for c in caches:
                 if e in c.endpoints and r.video in c.videos:
-                    pass
-
+                    cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+            total_time_saved += r.quantity * (e.datacentre_latency - cache_latency) * 1000
+            total_requests += r.quantity
+    return total_time_saved//total_requests
 
 def read_file(filename):
     f = open(filename)
@@ -127,6 +139,7 @@ def read_file(filename):
         endpoints[endpoint_id].requests.append(requests[i])
     
     f.close()
+
 
 def strip_videos():
     """ Remove videos that are unrequested
@@ -184,7 +197,7 @@ def main():
     read_file('example.in')
     
 
-    #Strip unneeded videos
+    # Strip unneeded videos
     videos = strip_videos()
 
     for endpoint in endpoints:
