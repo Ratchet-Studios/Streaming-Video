@@ -104,7 +104,7 @@ def get_score():
     
     for endpoint in endpoints:
         for request in endpoint.requests:
-            # see if this request is in the cache
+            # see if this request is in a cache connected to this endpoint
             video_in_cache = False
             for cache in endpoint.caches:
                 for video in cache.videos:
