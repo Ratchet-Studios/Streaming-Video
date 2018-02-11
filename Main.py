@@ -158,8 +158,6 @@ def main():
 
     # Strip unneeded videos
     videos = strip_videos()
-    
-    print('hi')
 
     # for endptindx, endpoint in enumerate(endpoints):
     #     while endpoint.requests:
