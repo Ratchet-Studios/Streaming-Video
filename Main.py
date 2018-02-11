@@ -129,7 +129,7 @@ def read_file(filename):
     for i in range(n_caches):
         connection_latencies.append([])
         for j in range(n_endpoints):
-            connection_latencies[i].append([])
+            connection_latencies[i].append(0)
 
     for i in range(n_endpoints):
         # read data for each endpoint
@@ -158,6 +158,8 @@ def main():
 
     # Strip unneeded videos
     videos = strip_videos()
+    
+    print('hi')
 
     # for endptindx, endpoint in enumerate(endpoints):
     #     while endpoint.requests:
