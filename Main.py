@@ -101,55 +101,58 @@ def get_score():
                     cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
             total_time_saved += r.quantity * (e.datacentre_latency - cache_latency) * 1000
             total_requests += r.quantity
-    return total_time_saved//total_requests
+    return total_time_saved // total_requests
+
 
 def read_file(filename):
+    global cache_size
     f = open(filename)
     n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part) for part in f.readline().split()]
     video_sizes = [int(part) for part in f.readline().split()]
-    
+
     for i in range(n_videos):
         videos.append(Video(video_sizes[i]))
-    
+
     for i in range(n_caches):
         caches.append(Cache())
-    
+
     for i in range(n_caches):
         connection_latencies.append([])
         for j in range(n_endpoints):
             connection_latencies[i].append([])
-    
+
     for i in range(n_endpoints):
         # read data for each endpoint
         datacentre_latency, endpoint_n_caches = [int(part) for part in f.readline().split()]
-        
+
         endpoints.append(Endpoint(datacentre_latency))
-        
+
         for j in range(endpoint_n_caches):
             cache, latency = [int(part) for part in f.readline().split()]
             endpoints[i].caches.append(caches[cache])
             caches[cache].endpoints.append(endpoints[i])
             connection_latencies[cache][i] = latency
-    
+
     for i in range(n_request_descriptions):
         # read data for each video
         video_id, endpoint_id, n_requests = [int(part) for part in f.readline().split()]
-        
+
         requests.append(Request(n_requests, videos[video_id]))
         endpoints[endpoint_id].requests.append(requests[i])
-    
+
     f.close()
 
 
 def strip_videos():
     """ Remove videos that are unrequested
     remove videos that are too large for any of the data centres"""
-    
+
     for video in videos:
         if video.size > cache_size or video not in [request.video for request in requests]:
             videos.remove(video)
 
     return videos
+
 
 def write_to_file(caches):
     """
@@ -163,9 +166,10 @@ def write_to_file(caches):
         text += "\n" + str(cache.id) + " "
         for video in cache.videos:
             text += str(video.id) + " "
-    output = open("output.txt","w")
+    output = open("output.txt", "w")
     output.write(text)
     output.close()
+
 
 def create_dummy_caches():
     """
@@ -183,6 +187,7 @@ def create_dummy_caches():
         caches.append(cache)
     return caches
 
+
 def get_score():
     """
     Calculates our score from the variables, *NOT* from output.txt
@@ -192,17 +197,23 @@ def get_score():
 
     """
 
+
 def main():
-    
     read_file('example.in')
-    
 
     # Strip unneeded videos
     videos = strip_videos()
 
-    for endpoint in endpoints:
+    for endptindx, endpoint in enumerate(endpoints):
         while endpoint.requests:
+            max_request = 0
             for request in endpoint.requests:
+                if request.quantity > max_request:
+                    max_request = request
+            min_cacheid = 999999999
+            for cache in endpoint.caches:
+                if min_cacheid < connection_latencies[cache.id][endptindx]:
+                    min_cacheid = connection_latencies[cache.id][endptindx]
 
             max(endpoint.requests.quantity)
             endpoint.caches.min()
