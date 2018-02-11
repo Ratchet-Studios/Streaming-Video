@@ -26,6 +26,8 @@ def main():
     endpoints = []
     caches = []
     videos = []
+    requests = []
+    
     connection_latencies = [[]] # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
     
     # read data from file
@@ -38,6 +40,11 @@ def main():
     
     for i in range(n_caches):
         caches.append(Cache())
+        
+    for i in range(n_caches):
+        connection_latencies.append([])
+        for j in range(n_endpoints):
+            connection_latencies[i].append([])
 
     for i in range(n_endpoints):
         # read data for each endpoint
@@ -48,12 +55,15 @@ def main():
         for j in range(endpoint_n_caches):
             cache, latency = [int(part) for part in f.readline().split()]
             endpoints[i].caches.append(caches[cache])
-            # connection_latencies[cache][i] = latency TODO: FIX THIS
+            caches[cache].endpoints.append(endpoints[i])
+            connection_latencies[cache][i] = latency
             
     for i in range(n_videos):
         # read data for each video
         video_id, endpoint_id, n_requests = [int(part) for part in f.readline().split()]
         
+        requests.append(Request(n_requests, videos[video_id]))
+        endpoints[endpoint_id].requests.append(requests[i])
     
     f.close()
 
