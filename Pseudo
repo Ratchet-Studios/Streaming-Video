@@ -5,3 +5,7 @@ Strip list of videos down:
     remove videos that are too large for any of the data centres
 Calculate time saved per request as a function of time the video is served and latency:
     requests*(Data_centre_latency - cache_latency)
+
+for every endpoint:
+    for every video in endpoint:
+    max request video to fastest cache
