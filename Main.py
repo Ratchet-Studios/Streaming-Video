@@ -20,6 +20,12 @@ class Cache(object):
         self.id = id
         self.videos = []
         self.endpoints = []
+        
+    def space_remaining(self):
+        space_used = 0
+        for video in self.videos:
+            space_used += video.size
+        return cache_size - space_used
 
 
 class Request(object):
