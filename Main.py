@@ -1,3 +1,5 @@
+import time
+
 endpoints = []
 caches = []
 videos = []
@@ -225,4 +227,6 @@ def main():
     print('Score: ' + str(get_score()))
 
 if __name__ == '__main__':
+    st = time.time()
     main()
+    print('time: '+str(time.time()-st))
