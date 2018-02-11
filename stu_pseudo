@@ -1,0 +1,20 @@
+timesaved_video_cache = []
+
+for each video:
+	for each cache:
+		if video_fits_in_cache(video, cache):
+			calculate time saved by adding video to cache
+			timesaved_video_cache.append((time, video, cache))
+
+timesaved_video_cache.sort()
+
+while timesaved_video_cache not empty:
+	time, video, cache = timesaved_video_cache[0]
+	caches[cache].videos.append(video)
+	del timesaved_video_cache[0]
+
+	space_remaining_on_cache = caches[cache].remaining_space()
+
+	for index, time1, video1, cache1 in enumerate(timesaved_video_cache):
+		if video1 == video:
+			timesaved_video_cache.remove()
