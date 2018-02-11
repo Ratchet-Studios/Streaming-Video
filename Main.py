@@ -162,7 +162,7 @@ def main():
 
     for video in range(len(videos)):
         for cache in range(len(caches)):
-            print('cache ' + str(cache) + ' space remaining: ' + str(caches[cache].space_remaining()))
+            # print('cache ' + str(cache) + ' space remaining: ' + str(caches[cache].space_remaining()))
             if videos[video].size <= caches[cache].space_remaining():
                 # calculate time saved by adding video to cache
                 timesaved = 0
@@ -184,8 +184,8 @@ def main():
         # update the timesaved_video_cache list so it can be reused without recalculating and sorting every time
         space_remaining_on_cache = caches[cache].space_remaining()
 
-        for i in xrange(len(timesaved_video_cache) - 1, -1, -1): #according to stackoverflow I have to go backwards to avoid problems
-            timesaved2, video2, cache2 = timesaved_video_cache
+        for i in range(len(timesaved_video_cache) - 1, -1, -1): #according to stackoverflow I have to go backwards to avoid problems
+            timesaved2, video2, cache2 = timesaved_video_cache[i]
             
             #adding video2 to cache2 would now be impossible due to #action 1
             if video2 == video or (cache2 == cache and videos[video2].size > space_remaining_on_cache):
