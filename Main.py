@@ -28,17 +28,20 @@ class Video(object):
         self.size = size
 
 
-def strip_videos(videos, cache_size):
+def strip_videos(videos, cache_size, requests):
     """ Remove videos that are unrequested
     remove videos that are too large for any of the data centres"""
-    returned_videos = videos.copy()
+    requested_IDs = []
+    for i in requests:
+         requested_IDs.append(i.video.id)
 
     cnt = 0
     for video in videos:
-        if video.size > cache_size:
-            returned_videos[cnt].remove()
+        if video.size > cache_size or video.id not in requested_IDs:
+            videos[cnt].remove()
         cnt += 1
 
+    return videos
 
 
 def main():
@@ -55,6 +58,9 @@ def main():
     requests = []
 
     f.close()
+
+    #Strip unneeded videos
+    videos = strip_videos()
 
 
 if __name__ == '__main__':
