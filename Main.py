@@ -6,6 +6,7 @@ cache_size = 0
 
 connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
+
 class Endpoint(object):
     def __init__(self, id, datacentre_latency):
         self.id = id
@@ -160,24 +161,12 @@ def read_file(filename):
 
     f.close()
 
+
 def main():
     read_file('example.in')
 
     # Strip unneeded videos
-    #videos = strip_videos()
-    
-    global caches
-    
-    caches[0].videos.append(videos[0])
-    
-    caches[1].videos.append(videos[3])
-    caches[1].videos.append(videos[1])
-    
-    caches[2].videos.append(videos[0])
-    caches[2].videos.append(videos[1])
-    
-    print(get_score())
-    
+    # videos = strip_videos()
 
     # for endptindx, endpoint in enumerate(endpoints):
     #     while endpoint.requests:
@@ -186,32 +175,46 @@ def main():
     #             if request.quantity > max_request:
     #                 max_request = request
 
-    #         min_cacheid = 999999999
-    #         for cache in endpoint.caches:
-    #             if min_cacheid < connection_latencies[cache.id][endptindx]:
-    #                 min_cacheid = connection_latencies[cache.id][endptindx]
+    timesaved_video_cache = []
 
-    # for e in endpoints:
-    #     max_request = e.requests[0]
-    #     for r in e.requests:
-    #         if r.quantity > max_request.quantity:
-    #             max_request = r
-    #
-    #     min_cache_latency = e.caches[0]
-    #     for c in e.caches:
-    #         if connection_latencies[c.id][e.id] < connection_latencies[min_cache_latency.id][e.id]:
-    #             min_cache_latency = c
+    for video in range(len(videos)):
+        for cache in range(len(caches)):
+            # print('cache ' + str(cache) + ' space remaining: ' + str(caches[cache].space_remaining()))
+            if videos[video].size <= caches[cache].space_remaining():
+                # calculate time saved by adding video to cache
+                timesaved = 0
+                for endpoint in caches[cache].endpoints:
+                    for request in endpoint.requests:
+                        if request.video.id == video:
+                            timesaved += request.quantity * (endpoint.datacentre_latency - connection_latencies[cache][endpoint.id])
+                
+                timesaved_video_cache.append((timesaved, video, cache))
 
+    timesaved_video_cache.sort(key=lambda x: x[0], reverse=True) # sort by time saved
+    
+    for time, video, cache in timesaved_video_cache:
+        print('time saved: {}, when video {} is added to cache {}'.format(time, video, cache))
 
-            #
-            # for r in e.requests:
-            #     cache_latency = 999999999
-            #     for c in caches:
-            #         if e in c.endpoints and r.video in c.videos:
-            #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+    while timesaved_video_cache:  # while not empty
+        # add video to cache (which saves most time)
+        time, video, cache = timesaved_video_cache[0]
+        caches[cache].videos.append(videos[video]) #action 1
+        del timesaved_video_cache[0]
+    
+        # update the timesaved_video_cache list so it can be reused without recalculating and sorting every time
+        space_remaining_on_cache = caches[cache].space_remaining()
 
-        # total_time_saved += r.quantity * (e.datacentre_latency - min_cache_latency) * 1000
-        # total_requests += r.quantity
+        for i in range(len(timesaved_video_cache) - 1, -1, -1): #according to stackoverflow I have to go backwards to avoid problems
+            timesaved2, video2, cache2 = timesaved_video_cache[i]
+            
+            #adding video2 to cache2 would now be impossible due to #action 1
+            if video2 == video or (cache2 == cache and videos[video2].size > space_remaining_on_cache):
+                del timesaved_video_cache[i]
+        
+    for index, cache in enumerate(caches):
+        print('Cache ' + str(index) + ' contains:')
+        for video in cache.videos:
+            print('Video ' + str(video.id))
 
 
 if __name__ == '__main__':
