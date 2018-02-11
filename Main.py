@@ -12,9 +12,8 @@ class Endpoint(object):
 
 
 class Cache(object):
-    def __init__(self, id, videos):
-        self.id = id
-        self.videos = videos
+    def __init__(self):
+        self.videos = []
         self.endpoints = []
 
 
@@ -25,13 +24,23 @@ class Request(object):
 
 
 class Video(object):
-    def __init__(self, id, size):
-        self.id = id
+    def __init__(self, size):
         self.size = size
 
 
+def strip_videos(videos, cache_size, requests):
+    """ Remove videos that are unrequested
+    remove videos that are too large for any of the data centres"""
+    requested_IDs = []
+    for i in requests:
+         requested_IDs.append(i.video.id)
 
-
+    cnt = 0
+    for video in videos:
+        if video.size > cache_size or video.id not in requested_IDs:
+            videos[cnt].remove()
+        cnt += 1
+    return videos
 
 def write_to_file(caches):
     """
@@ -65,18 +74,13 @@ def create_dummy_caches():
         caches.append(cache)
     return caches
 
-def score_output_txt():
-    total_requests = len(requests)
-    r = Request(1500, 2)
-    requests = [r for _ in range(5)]  #dummy data
-    for request in requests:
-        time_saved = request.latency
-    pass
-
 
 def main():
     endpoints = []
     caches = []
+    videos = []
+    requests = []
+
     connection_latencies = [[]] # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
     # read data from file
@@ -84,8 +88,16 @@ def main():
     n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part) for part in f.readline().split()]
     video_sizes = [int(part) for part in f.readline().split()]
 
+    for i in range(n_videos):
+        videos.append(Video(video_sizes[i]))
+
     for i in range(n_caches):
         caches.append(Cache())
+
+    for i in range(n_caches):
+        connection_latencies.append([])
+        for j in range(n_endpoints):
+            connection_latencies[i].append([])
 
     for i in range(n_endpoints):
         # read data for each endpoint
@@ -96,11 +108,20 @@ def main():
         for j in range(endpoint_n_caches):
             cache, latency = [int(part) for part in f.readline().split()]
             endpoints[i].caches.append(caches[cache])
+            caches[cache].endpoints.append(endpoints[i])
             connection_latencies[cache][i] = latency
 
+    for i in range(n_videos):
+        # read data for each video
+        video_id, endpoint_id, n_requests = [int(part) for part in f.readline().split()]
 
+        requests.append(Request(n_requests, videos[video_id]))
+        endpoints[endpoint_id].requests.append(requests[i])
 
     f.close()
+
+    #Strip unneeded videos
+    videos = strip_videos()
 
 
 if __name__ == '__main__':
