@@ -149,18 +149,36 @@ def main():
     # Strip unneeded videos
     videos = strip_videos()
 
-    for endptindx, endpoint in enumerate(endpoints):
-        while endpoint.requests:
-            max_request = 0
-            for request in endpoint.requests:
-                if request.quantity > max_request:
-                    max_request = request
-            min_cacheid = 999999999
-            for cache in endpoint.caches:
-                if min_cacheid < connection_latencies[cache.id][endptindx]:
-                    min_cacheid = connection_latencies[cache.id][endptindx]
+    # for endptindx, endpoint in enumerate(endpoints):
+    #     while endpoint.requests:
+    #         max_request = 0
+    #         for request in endpoint.requests:
+    #             if request.quantity > max_request:
+    #                 max_request = request
 
+    #         min_cacheid = 999999999
+    #         for cache in endpoint.caches:
+    #             if min_cacheid < connection_latencies[cache.id][endptindx]:
+    #                 min_cacheid = connection_latencies[cache.id][endptindx]
 
+    for e in endpoints:
+        max_request = Request(0, Video(1))
+        for r in e.requests:
+            if r.quantity > max_request.quantity:
+                max_request = r
+
+        cache_latency = 99999999
+        for c in e.caches:
+            cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+    #
+    # for r in e.requests:
+    #     cache_latency = 999999999
+    #     for c in caches:
+    #         if e in c.endpoints and r.video in c.videos:
+    #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+
+        total_time_saved += r.quantity * (e.datacentre_latency - cache_latency) * 1000
+        total_requests += r.quantity
 
 
 if __name__ == '__main__':
