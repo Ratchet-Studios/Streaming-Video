@@ -18,12 +18,15 @@ class Endpoint(object):
 
 class Cache(object):
     def __init__(self, id, videos):
-        pass
+        self.id = id
+        self.videos = videos
 
 class Request(object):
     def __init__(self, quantity, video):
-        pass
+        self.quantity = quantity
+        self.video = video
 
 class Video(object):
     def __init__(self, id, size):
-        pass
+        self.id = id
+        self.size = size
