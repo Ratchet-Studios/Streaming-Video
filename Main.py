@@ -5,14 +5,16 @@ for i in range(n_endpoints):
 
 
 class Endpoint(object):
-    def __init__(self, datacentre_latency):
+    def __init__(self, id, datacentre_latency):
+        self.id = id
         self.datacentre_latency = datacentre_latency
         self.requests = []
         self.caches = []
 
 
 class Cache(object):
-    def __init__(self):
+    def __init__(self, id):
+        self.id = id
         self.videos = []
         self.endpoints = []
 
@@ -24,7 +26,8 @@ class Request(object):
 
 
 class Video(object):
-    def __init__(self, size):
+    def __init__(self, id, size):
+        self.id = id
         self.size = size
 
 
@@ -67,13 +70,21 @@ def create_dummy_caches():
     for cache_id in range(random.randint(1, 1000)):
         videos = []
         for video_id in range(random.randint(1, 5)):
-            video = Video(video_id, random.randint(1, 1000))
+            video = Video(random.randint(1, 1000))
             videos.append(video)
 
         cache = Cache(cache_id, videos)
         caches.append(cache)
     return caches
 
+def get_score():
+    """
+    Calculates our score from the variables, *NOT* from output.txt
+    :return: int: our score as described by google
+
+    for each request,
+
+    """
 
 def main():
     endpoints = []
@@ -89,10 +100,10 @@ def main():
     video_sizes = [int(part) for part in f.readline().split()]
 
     for i in range(n_videos):
-        videos.append(Video(video_sizes[i]))
+        videos.append(Video(i, video_sizes[i]))
 
     for i in range(n_caches):
-        caches.append(Cache())
+        caches.append(Cache(i))
 
     for i in range(n_caches):
         connection_latencies.append([])
@@ -103,7 +114,7 @@ def main():
         # read data for each endpoint
         datacentre_latency, endpoint_n_caches = [int(part) for part in f.readline().split()]
 
-        endpoints.append(Endpoint(datacentre_latency))
+        endpoints.append(Endpoint(i, datacentre_latency))
 
         for j in range(endpoint_n_caches):
             cache, latency = [int(part) for part in f.readline().split()]
