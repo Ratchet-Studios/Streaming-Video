@@ -143,61 +143,6 @@ def read_file(filename):
     f.close()
 
 
-def strip_videos():
-    """ Remove videos that are unrequested
-    remove videos that are too large for any of the data centres"""
-
-    for video in videos:
-        if video.size > cache_size or video not in [request.video for request in requests]:
-            videos.remove(video)
-
-    return videos
-
-
-def write_to_file(caches):
-    """
-    Takes in the info about the caches and writes it to output.txt as google wants it formatted
-
-    :param caches: a list of all the caches that we are using.
-    :return: nothing, just writes to 'output.txt' the data as google wants it
-    """
-    text = str(len(caches))
-    for cache in caches:
-        text += "\n" + str(cache.id) + " "
-        for video in cache.videos:
-            text += str(video.id) + " "
-    output = open("output.txt", "w")
-    output.write(text)
-    output.close()
-
-
-def create_dummy_caches():
-    """
-    Creates dummy caches & dummy videos for those caches within the limits specified by google
-    :return: a list of dummy caches, fully populated with videos and cache_id's
-    """
-    caches = []
-    for cache_id in range(random.randint(1, 1000)):
-        videos = []
-        for video_id in range(random.randint(1, 5)):
-            video = Video(random.randint(1, 1000))
-            videos.append(video)
-
-        cache = Cache(cache_id, videos)
-        caches.append(cache)
-    return caches
-
-
-def get_score():
-    """
-    Calculates our score from the variables, *NOT* from output.txt
-    :return: int: our score as described by google
-
-    for each request,
-
-    """
-
-
 def main():
     read_file('example.in')
 
