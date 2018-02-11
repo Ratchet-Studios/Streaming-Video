@@ -2,6 +2,7 @@ endpoints = []
 caches = []
 videos = []
 requests = []
+cache_size = 0
 
 connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the latency between cache and endpoint
 
@@ -66,18 +67,13 @@ def read_file(filename):
     
     f.close()
 
-def strip_videos(videos, cache_size, requests):
+def strip_videos():
     """ Remove videos that are unrequested
     remove videos that are too large for any of the data centres"""
-    requested_IDs = []
-    for i in requests:
-         requested_IDs.append(i.video.id)
-
-    cnt = 0
+    
     for video in videos:
-        if video.size > cache_size or video.id not in requested_IDs:
-            videos[cnt].remove()
-        cnt += 1
+        if video.size > cache_size or video not in [request.video for request in requests]:
+            videos.remove(video)
 
     return videos
 
