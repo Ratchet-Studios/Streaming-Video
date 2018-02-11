@@ -8,30 +8,34 @@ connection_latencies = [[]]  # where connection[cache_id][endpoint_id] is the la
 
 
 class Endpoint(object):
-    def __init__(self, datacentre_latency):
+    def __init__(self, id, datacentre_latency):
+        self.id = id
         self.datacentre_latency = datacentre_latency
         self.requests = []
         self.caches = []
 
 
 class Cache(object):
-    def __init__(self):
+    def __init__(self, id):
+        self.id = id
         self.videos = []
         self.endpoints = []
 
 
 class Request(object):
-    def __init__(self, quantity, video):
+    def __init__(self, id, quantity, video):
+        self.id = id
         self.quantity = quantity
         self.video = video
 
 
 class Video(object):
-    def __init__(self, size):
+    def __init__(self, id, size):
+        self.id = id
         self.size = size
 
 
-def strip_videos(videos, cache_size, requests):
+def strip_videos():
     """ Remove videos that are unrequested
     remove videos that are too large for any of the data centres"""
     requested_IDs = []
@@ -170,12 +174,12 @@ def main():
         cache_latency = 99999999
         for c in e.caches:
             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
-    #
-    # for r in e.requests:
-    #     cache_latency = 999999999
-    #     for c in caches:
-    #         if e in c.endpoints and r.video in c.videos:
-    #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
+            #
+            # for r in e.requests:
+            #     cache_latency = 999999999
+            #     for c in caches:
+            #         if e in c.endpoints and r.video in c.videos:
+            #             cache_latency = min(connection_latencies[c.id][e.id], cache_latency)
 
         total_time_saved += r.quantity * (e.datacentre_latency - cache_latency) * 1000
         total_requests += r.quantity
