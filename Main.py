@@ -156,7 +156,7 @@ def main():
     read_file('example.in')
 
     # Strip unneeded videos
-    videos = strip_videos()
+    # videos = strip_videos()
 
     # for endptindx, endpoint in enumerate(endpoints):
     #     while endpoint.requests:
