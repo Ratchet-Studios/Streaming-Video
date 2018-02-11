@@ -29,6 +29,11 @@ def main():
     f = open('me_at_the_zoo.in')
     n_videos, n_endpoints, n_request_descriptions, n_caches, cache_size = [int(part) for part in f.readline().split()]
     video_sizes = [int(part) for part in f.readline().split()]
+
+	for i in range(n_endpoints):
+		# read data for each endpoint
+		datacentre_latency, endpoint_n_caches
+		pass
     
     for i in range(n_endpoints):
         # read data for each endpoint
