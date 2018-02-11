@@ -1,8 +1,3 @@
-for i in range(n_endpoints):
-    # read data for each endpoint
-    pass
-
-
 class Endpoint(object):
     def __init__(self, datacentre_latency):
         self.datacentre_latency = datacentre_latency
