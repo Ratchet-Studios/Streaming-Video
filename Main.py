@@ -157,8 +157,13 @@ def main():
 
     # Strip unneeded videos
     videos = strip_videos()
-    
-    print('hi')
+
+    # for endptindx, endpoint in enumerate(endpoints):
+    #     while endpoint.requests:
+    #         max_request = 0
+    #         for request in endpoint.requests:
+    #             if request.quantity > max_request:
+    #                 max_request = request
 
     timesaved_video_cache = []
 
